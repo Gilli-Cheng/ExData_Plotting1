@@ -4,7 +4,7 @@ data <- read.table(file = "./household_power_consumption.txt", header = TRUE,
 x <- with(data, paste(Date,Time))
 x <- strptime(x, "%d/%m/%Y %H:%M:%S")
 data <- cbind(x,data)
-data <- data[data$x >= "2007-02-01 00:00:00" & data$x <= "2007-02-03 00:00:00",]
+data <- data[data$x >= "2007-02-01 00:00:00" & data$x < "2007-02-03 00:00:00",]
 
 
 windows(width=10, height=10)
