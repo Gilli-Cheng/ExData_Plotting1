@@ -1,0 +1,54 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# cool and easier ways founded after reviewing others
+
+##1 
+
+`plot(data$x,data$Global_active_power, type = "l")`
+
+`type = "l"` means `lines()`
+
+##2 usinf data table and fast read
+```{r}
+
+library("data.table")
+power <- data.table::fread(input = "household_power_consumption.txt")
+
+power[, Global_active_power := lapply(.SD, as.numeric),
+      .SDcols = c("Global_active_power")]
+
+power[, dateTime := as.POSIXct(paste(Date, Time), format = "%d/%m/%Y %H:%M:%S")]
+
+power<- power[(dateTime >= "2007-02-01") & (dateTime < "2007-02-03")]
+
+png("plot2.png", width=480, height=480)
+
+plot(x = power[, dateTime],
+     y = power[, Global_active_power], 
+     xlab="", 
+     ylab="Global Active Power (kilowatt)",
+     type = "l")
+
+```
+using fast read really is faster!
+
+
+
+##3 filter and formatting the date
+```{r}
+p1 <- read.table("household_power_consumption.txt", header=TRUE, sep=";", na.strings = "?")
+p1$Date <- as.Date(p1$Date, format = "%d/%m/%Y")
+p1 <- subset(p1, Date >= as.Date("2007-02-01") & Date <= as.Date("2007-02-02"))
+
+Daytime <- paste(p1$Date, p1$Time)
+
+p2 <- subset(p1, select = -c(Date, Time))
+p2$Datetime <- as.POSIXct(Daytime)
+```
+
+
+
